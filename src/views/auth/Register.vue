@@ -22,11 +22,11 @@
         </div>
         <div class="form-group">
           <label class="control-label">电话</label>
-          <input name="phone" type="text" class="form-control" placeholder="电话号码 *选填">
+          <input v-model.trim="phone" type="text" class="form-control" placeholder="电话号码 *选填">
         </div>
         <div class="form-group">
           <label class="control-label">邮箱</label>
-          <input name="email" type="text" class="form-control" placeholder="邮箱 *选填">
+          <input v-model.trim="email" type="text" class="form-control" placeholder="邮箱 *选填">
         </div>
         <div class="form-group">
           <label class="control-label">图片验证码</label>
@@ -47,6 +47,7 @@
 <script>
 import createCaptcha from '@/utils/createCaptcha'
 import register from '@/api/User'
+import ls from '@/utils/localStorage'
 
 export default {
   name: 'Register',
@@ -55,7 +56,9 @@ export default {
       captchaTpl: '', // 验证码模板
       username: '', // 用户名
       password: '', // 密码
-      cpassword: '', // 确认密码
+      cpassword: '', // 确认密码,
+      email: '',
+      phone: '',
       captcha: '', // 验证码
       msg: '', // 消息
       msgType: '', // 消息类型
@@ -70,7 +73,7 @@ export default {
       const {
         tpl,
         captcha
-      } = createCaptcha(6)
+      } = createCaptcha(1)
 
       this.captchaTpl = tpl
       this.localCaptcha = captcha
@@ -92,17 +95,23 @@ export default {
       } else {
         const user = {
           name: this.username,
-          password: this.password
+          password: this.password,
+          email: this.email,
+          phone: this.phone,
+          avatar: `https://api.adorable.io/avatars/200/${this.username}.png`
         }
+
         this.login(user)
       }
     },
     login(user) {
       register.UserCreate(user).then(response => {
-          const code = response.data.code
+          const code = response.code
           if(code != 201){
-          this.showMsg('失敗')
+          this.showMsg(response.message)
           }else{
+            const user = response.data
+            this.$store.dispatch('login', user)
             this.showMsg('注册成功', 'success')
           }
       })
