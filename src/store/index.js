@@ -17,7 +17,7 @@ const mutations = {
     UPDATE_AUTH(state, auth) {
         state.auth = auth
         ls.setItem('auth', auth)
-    }
+    },
 }
 
 const actions = {
@@ -31,15 +31,23 @@ const actions = {
         ls.removeItem('user')
         router.push({ name: 'Home', params: { logout: true } })
     },
+    errlogout({ commit }) {
+        commit('UPDATE_AUTH', false)
+        ls.removeItem('user')
+        router.push({ name: 'Home', params: { errLogin: true } })
+    },
     updateUser({ state, commit }, user) {
     const stateUser = state.user
-
     if (stateUser && typeof stateUser === 'object') {
       user = { ...stateUser, ...user }
     }
-
     commit('USER', user)
-  }
+  },
+  refreshToken({ state, commit }, token) {
+    const stateUser = state.user
+    const user = { ...stateUser, ...token }
+    commit('USER', user)
+  },
 }
 
 const store = new Vuex.Store({

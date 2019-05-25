@@ -53,10 +53,8 @@ export default {
   },
   created() {
     const user = this.$store.state.user
-
     if (user && typeof user === 'object') {
-      const { id, name,  sex,  introduction  } = user
-      console.log(introduction)
+      const {  name,  sex,  introduction  } = user
       this.username = name
       this.sex = sex || this.sex
       this.introduction = introduction
@@ -65,6 +63,7 @@ export default {
   methods: {
     updateProfile(e) {
       this.$nextTick(() => {
+      setTimeout(() => {
         if (e.target.canSubmit) {
           const user = {
             name: this.username,
@@ -72,8 +71,7 @@ export default {
             introduction: this.introduction
           }
           register.UserUpdate(user).then(response => {
-            const code = response.code
-            if (code != 201) {
+            if (response.code && response.code != 201) {
               this.$message.show(response.message, 'warning')
             } else {
               this.$store.dispatch('updateUser', {
@@ -86,6 +84,7 @@ export default {
           })
         }
       })
+      });
     },
   }
 }

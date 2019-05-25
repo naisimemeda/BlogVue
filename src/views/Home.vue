@@ -17,7 +17,7 @@ export default {
   beforeRouteEnter(to, from, next) {
     const fromName = from.name
     const logout = to.params.logout
-
+    const errLogin = to.params.errLogin
     next(vm => {
       if (vm.$store.state.auth) {
         switch (fromName) {
@@ -32,6 +32,8 @@ export default {
         }
       } else if (logout) {
         vm.showMsg('操作成功')
+      } else if (errLogin) {
+        vm.showMsg('请重新登陆', 'warning')
       }
     })
   },
