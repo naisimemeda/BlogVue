@@ -5,6 +5,10 @@
       <h2><i class="fa fa-cog"></i> 编辑个人资料</h2>
       <hr>
       <div class="form-horizontal" data-validator-form>
+      <div class="form-group" >
+        <label class="col-sm-2 control-label">头像</label>
+          <Avatar style="width: 480px; margin: 0 auto;"></Avatar>
+      </div>
         <div class="form-group">
           <label class="col-sm-2 control-label">用户名</label>
           <div class="col-sm-6">
@@ -41,9 +45,12 @@
 
 <script>
 import register from '@/api/User'
-
+import Avatar from '@/components/Avatar'
 export default {
   name: 'EditProfile',
+  components: {
+    Avatar,
+  },
   data() {
     return {
       username: '', // 用户名
