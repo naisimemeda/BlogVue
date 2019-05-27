@@ -11,7 +11,7 @@
       </div>
       <div class="text-center p-2" style="line-height: 22">
         <file-upload
-          :headers="{'authorization': this.$store.state.user.token }"
+          :headers="{'authorization': this.$store.state.user.token }" 
           extensions="gif,jpg,jpeg,png,webp"
           accept="image/png,image/gif,image/jpeg,image/webp"
           name="avatar"
