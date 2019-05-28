@@ -28,6 +28,12 @@ export default [
         name: 'EditProfile',
         component: () => import('@/views/users/Profile.vue'),
         meta: { auth: true }
+      },
+      {
+        path: '/users/edit_password',
+        name: 'EditPassword',
+        component: () => import('@/views/users/Password.vue'),
+        meta: { auth: true }
       }
     ]
   },

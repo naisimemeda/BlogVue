@@ -70,8 +70,6 @@ export default {
   methods: {
     updateProfile(e) {
       this.$nextTick(() => {
-      setTimeout(() => {
-        if (e.target.canSubmit) {
           const user = {
             name: this.username,
             sex: this.sex,
@@ -89,8 +87,6 @@ export default {
               this.$message.show('修改成功')
             }
           })
-        }
-      })
       });
     },
   }
