@@ -46,7 +46,7 @@ export default {
     }
   },
   methods: {
-    updatePassword(e) {
+    updatePassword(e) { 
       this.$nextTick(() => {
         if (e.target.canSubmit) {
           this.$store.dispatch('updateUser', { password: this.cpassword })
