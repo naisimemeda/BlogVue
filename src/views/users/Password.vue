@@ -38,7 +38,7 @@ export default {
       cpassword: '' // 确认密码
     }
   },
-  created() {
+  created() {  
     const user = this.$store.state.user
 
     if (user && typeof user === 'object') {
@@ -46,7 +46,7 @@ export default {
     }
   },
   methods: {
-    updatePassword(e) { 
+    updatePassword(e) {
       this.$nextTick(() => {
         if (e.target.canSubmit) {
           this.$store.dispatch('updateUser', { password: this.cpassword })
