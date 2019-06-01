@@ -22,4 +22,16 @@ export default {
       response.data
     ).catch(error => error.data)
   },
+  UserPassword: data => {
+    const user = store.state.user
+    return axios.post("http://blogapi.test/api/password", {
+      password: data
+    }, {
+      headers: {
+        'Authorization': user.token
+      }
+    }).then(response => {
+      response.data
+    }).catch(error => error.data)
+  }
 }

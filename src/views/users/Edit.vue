@@ -29,11 +29,6 @@ export default {
           icon: 'list-alt'
         },
         {
-          name: 'edit_avatar',
-          title: '修改头像',
-          icon: 'picture-o'
-        },
-        {
           name: 'edit_password',
           title: '修改密码',
           icon: 'lock'
