@@ -57,7 +57,7 @@ const actions = {
     commit('UPDATE_AUTH', false)
     ls.removeItem('user')
     router.push({
-      name: 'Home',
+      name: 'Home', 
       params: {
         errLogin: true
       }
