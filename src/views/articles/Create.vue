@@ -3,7 +3,7 @@
   <div class="blog-pages">
     <div class="col-md-12 panel">
       <div class="panel-body">
-        <h2 class="text-center">创作文章</h2>
+        <h2 class="text-center">{{ articleId ? '编辑文章' : '创作文章' }}</h2>
         <hr>
         <div data-validator-form>
           <div class="form-group">
@@ -28,6 +28,7 @@ import SimpleMDE from 'simplemde'
 import hljs from 'highlight.js'
 import ls from '@/utils/localStorage'
 import register from '@/api/article'
+import router from '@/router'
 window.hljs = hljs
 
 export default {
@@ -35,9 +36,30 @@ export default {
   data() {
     return {
       title: '', // 文章标题
-      content: '' // 文章内容
+      content: '', // 文章内容
+      articleId: undefined
     }
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.setArticleId(vm.$route.params.articleId)
+    })
+},
+// 在离开该组件的对应路由前
+beforeRouteLeave(to, from, next) {
+  // 清空自动保存的文章数据
+  this.clearData()
+  next()
+},
+watch: {
+  // 监听路由参数的变化
+  '$route'(to) {
+    // 清空自动保存的文章数据
+    this.clearData()
+    // 设置 articleId
+    this.setArticleId(to.params.articleId)
+  }
+},
   mounted() {
     const simplemde = new SimpleMDE({
       element: document.querySelector('#editor'),
@@ -58,19 +80,8 @@ export default {
     })
 
     this.simplemde = simplemde
-    this.fillContent()
   },
   methods: {
-    fillContent() {
-      const simplemde = this.simplemde
-      const title = ls.getItem('smde_title')
-
-      if (title !== null) {
-        this.title = title
-      }
-
-      this.content = simplemde.value()
-    },
     post() {
       const title = this.title
       const content = this.content
@@ -81,8 +92,9 @@ export default {
           content
         }
         register.CreateArticle(article).then(response => {
-          this.$store.dispatch('post', { article })
           this.clearData()
+          var articleId = response.data.id
+          router.push({ name: 'Content', params: { articleId, showMsg: true } })
         })
       }
     },
@@ -92,6 +104,10 @@ export default {
       this.simplemde.value('')
       this.simplemde.clearAutosavedValue()
     }
+    ,
+  setArticleId(articleId) {
+    this.articleId = articleId
+  }
   }
 }
 </script>

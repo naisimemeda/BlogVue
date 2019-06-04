@@ -11,5 +11,8 @@ export default {
     }).then(response =>
       response.data
     ).catch(error => error.response.data)
+  },
+  Article: id => {
+    return axios.get(('http://blogapi.test/api/article/'+ id)).then( response => response.data )
   }
 }

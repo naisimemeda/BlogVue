@@ -2,20 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import ls from '../utils/localStorage'
 import router from '../router'
-import * as moreActions from './actions'
 Vue.use(Vuex)
 
-const getters = {
-  getArticleById: (state) => (id) => {
-    let articles = state.articles
-    if (Array.isArray(articles)) {
-      articles = articles.filter(article => parseInt(id) === parseInt(article.articleId))
-      return articles.length ? articles[0] : null
-    } else {
-      return null
-    }
-  }
-}
 const state = {
   user: ls.getItem('user'),
   auth: ls.getItem('auth'),
@@ -34,7 +22,6 @@ const mutations = {
     state.articles = articles
     ls.setItem('articles', articles)
   },
-  ...moreActions
 }
 
 const actions = {
