@@ -43,22 +43,7 @@ export default {
   beforeRouteEnter(to, from, next) {
     next(vm => {
       vm.setArticleId(vm.$route.params.articleId)
-    })
-},
-// 在离开该组件的对应路由前
-beforeRouteLeave(to, from, next) {
-  // 清空自动保存的文章数据
-  this.clearData()
-  next()
-},
-watch: {
-  // 监听路由参数的变化
-  '$route'(to) {
-    // 清空自动保存的文章数据
-    this.clearData()
-    // 设置 articleId
-    this.setArticleId(to.params.articleId)
-  }
+  })
 },
   mounted() {
     const simplemde = new SimpleMDE({
@@ -91,11 +76,19 @@ watch: {
           title,
           content
         }
-        register.CreateArticle(article).then(response => {
-          this.clearData()
-          var articleId = response.data.id
-          router.push({ name: 'Content', params: { articleId, showMsg: true } })
-        })
+        if(this.articleId){
+          register.UpdateArticle(this.articleId, article).then(response => {
+            this.clearData()
+            var articleId = response.data
+            router.push({ name: 'Content', params: { articleId, showMsg: true } })
+          })
+        }else{
+          register.CreateArticle(article).then(response => {
+            this.clearData()
+            var articleId = response.data.id
+            router.push({ name: 'Content', params: { articleId, showMsg: true } })
+          })
+        }
       }
     },
     clearData() {
@@ -103,11 +96,19 @@ watch: {
       ls.removeItem('smde_title')
       this.simplemde.value('')
       this.simplemde.clearAutosavedValue()
-    }
-    ,
-  setArticleId(articleId) {
-    this.articleId = articleId
-  }
+    },
+    setArticleId(articleId) {
+      if(articleId){
+        this.articleId = articleId
+        register.Article(articleId).then(response => {
+            const article = response.data
+            let { id, title, content} = article
+            this.title =  title
+            this.content = content
+            this.simplemde.value(this.content)
+        })
+      }
+     }
   }
 }
 </script>

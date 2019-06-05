@@ -54,4 +54,9 @@ export default [
     component: () => import('@/views/articles/Create'),
     meta: { auth: true }
   },
+  {
+    path: '/:userid',
+    name: 'Column',
+    component: () => import('@/views/articles/Column')
+  },
 ]

@@ -41,7 +41,6 @@ new Vue({
       var token = error.response.headers.authorization;
       switch (error.response.status) {
         case 403:
-          console.log(error.response.headers);
           if (token) {
             this.$store.dispatch('refreshToken', {
               token: token

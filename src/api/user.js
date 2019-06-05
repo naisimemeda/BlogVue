@@ -33,5 +33,8 @@ export default {
     }).then(response => {
       response.data
     }).catch(error => error.data)
+  },
+  UserInfo: userid => {
+    return axios.get(('http://blogapi.test/api/userinfo/'+ userid)).then( response => response.data )
   }
 }

@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import router from '@/router'
 import SimpleMDE from 'simplemde'
 import hljs from 'highlight.js'
 import ls from '@/utils/localStorage'
@@ -60,7 +61,7 @@ export default {
     const articleId = this.$route.params.articleId
     if (articleId) {
       register.Article(articleId).then(response => {
-         const article = response.data
+        const article = response.data
          
         let { id, title, content, created_at, user_id} = article
 
@@ -89,7 +90,14 @@ export default {
     },
     // 删除文章
     deleteArticle() {
-
+      this.$swal({
+        text: '你确定要删除此内容吗?',
+        confirmButtonText: '删除'
+      }).then((res) => {
+          register.DelArticle(this.articleId).then(response => {
+          router.push({ name: 'Home', params: { showMsg: true } })
+        })
+      })
     }
   }
 }
