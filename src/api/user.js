@@ -36,5 +36,8 @@ export default {
   },
   UserInfo: userid => {
     return axios.get(('http://blogapi.test/api/userinfo/'+ userid)).then( response => response.data )
+  },
+  UserArticle: userid => {
+    return axios.get(('http://blogapi.test/api/userarticle/'+ userid)).then( response => response.data )
   }
 }
