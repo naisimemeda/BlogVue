@@ -41,5 +41,6 @@ $fa-font-path: "~font-awesome/fonts/";
 @import 'simplemde/dist/simplemde.min.css';
 @import 'highlight.js/styles/tomorrow-night-eighties.css';
 @import 'simditor/styles/simditor.css';
+@import "animate.css/animate.min.css";
 
 </style>

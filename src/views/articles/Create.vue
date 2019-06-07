@@ -41,10 +41,15 @@ export default {
     }
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.setArticleId(vm.$route.params.articleId)
-  })
-},
+      next(vm => {
+        vm.setArticleId(vm.$route.params.articleId)
+    })
+  },
+  beforeRouteLeave(to, from, next) {
+    // 清空自动保存的文章数据
+    this.clearData()
+    next()
+  },
   mounted() {
     const simplemde = new SimpleMDE({
       element: document.querySelector('#editor'),

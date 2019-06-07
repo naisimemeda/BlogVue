@@ -50,7 +50,7 @@ new Vue({
             return this.$store.dispatch('errlogout')
           }
           break
-        case 434:
+        case 414:
           return this.$store.dispatch('errlogout')
           break
       }

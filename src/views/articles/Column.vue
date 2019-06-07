@@ -19,7 +19,7 @@
             </div>
             <hr>
             <router-link :to="`/${id}`">
-              <li class="list-group-item"><i class="text-md fa fa-list-ul"></i> 专栏文章（{{ article_count }}）</li>
+              <li class="list-group-item"><i class="text-md fa fa-list-ul"></i> 专栏文章{{ article_count ? '（' + article_count + '）': ''}}</li>
             </router-link>
           </div>
         </div>
@@ -30,12 +30,18 @@
 
 <script>
 import register from '@/api/User.js'
-
+import Article from '@/api/article.js'
 export default {
   name: 'Column',
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.getUserInfo(vm.$route.params.userid)
+      const userid = vm.$route.params.userid
+      const articleId = vm.$route.params.articleId
+      if(userid){
+        vm.getUserInfo(vm.$route.params.userid)
+      }else if(articleId){
+        vm.getArticleUser(vm.$route.params.articleId)
+      }
     })
   },
    data(){
@@ -57,6 +63,17 @@ export default {
            that.article_count = article_count
            that.userName = name
         })
+    },
+    getArticleUser(articleId){
+      let that = this
+      Article.Article(articleId).then(response => {
+          const user = response.data.user
+          let { id, avatar, article_count, name } = user
+          that.id = id
+          that.userAvatar = avatar
+          that.article_count = article_count
+          that.userName = name    
+      })
     }
   }
 }

@@ -1,12 +1,10 @@
 <template>
-  <div class="blog-container" style="margin-top:20px">
-    <div class="blog-pages">
       <div class="col-md-9 left-col pull-right">
         <div class="panel article-body content-body">
           <h1 class="text-center">{{ title }}</h1>
           <div class="article-meta text-center">
             <i class="fa fa-clock-o"></i>
-        <abbr>{{create_time}}</abbr>
+            <abbr>{{create_time}}</abbr>
           </div>
           <div class="entry-content">
             <div class="content-body entry-content panel-body ">
@@ -20,10 +18,26 @@
             </div>
           </div>
         </div>
+        <div class="votes-container panel panel-default padding-md">
+      <div class="panel-body vote-box text-center">
+        <div class="btn-group">
+          <div @click="like" href="javascript:;" class="vote btn btn-primary popover-with-html" :class="likeClass">
+            <i class="fa fa-thumbs-up"></i> {{ likeClass ? '已赞' : '点赞' }}
+          </div>
+        </div>
+        <div class="voted-users">
+          <div class="user-lists">
+            <span v-for="(likeUser, index) in likeUsers" :key='index'>
+              <img :src="likeUser.avatar" class="img-thumbnail avatar avatar-middle animated swing" :class="{ 's' : likeUser.user_id == 1 }">
+            </span>
+          </div>
+          <div v-if="!likeUsers.length" class="vote-hint">成为第一个点赞的人吧 ?</div>
+        </div>
       </div>
     </div>
-  </div>
+      </div>
 </template>
+
 
 <script>
 import router from '@/router'
@@ -46,13 +60,14 @@ export default {
       title: '', // 文章标题
       content: '', // 文章内容
       create_time: '',
-      user_id: ''
+      user_id: '',
+      likeUsers: [], // 点赞用户列表
+      likeClass: '', // 点赞样式
     }
   },
   computed: {
     ...mapState([
       'auth',
-      'user'
     ])
   },
   // 在实例创建完成后
@@ -63,7 +78,7 @@ export default {
       register.Article(articleId).then(response => {
         const article = response.data
          
-        let { id, title, content, created_at, user_id} = article
+        let { id, title, content, created_at, user_id , like} = article
 
         this.title = title
         // 使用编辑器的 markdown 方法将 Markdown 内容转成 HTML
@@ -71,7 +86,8 @@ export default {
         this.create_time = created_at
         this.articleId = id
         this.user_id = user_id
-
+        this.likeUsers = like || []
+        this.likeClass = this.likeUsers.some(likeUser => likeUser.user_id === this.$store.state.user.id) ? 'active' : ''
         this.$nextTick(() => {
           // 遍历当前实例下的 'pre code' 元素
           this.$el.querySelectorAll('pre code').forEach((el) => {
@@ -98,7 +114,42 @@ export default {
           router.push({ name: 'Home', params: { showMsg: true } })
         })
       })
-    }
+    },
+    like(e) {
+  // 未登录时，提示登录
+      if (!this.auth) {
+        this.$swal({
+          text: '需要登录以后才能执行此操作。',
+          confirmButtonText: '前往登录'
+        }).then((res) => {
+          if (res.value) {
+            this.$router.push('/auth/login')
+          }
+        })
+      } else {
+        let that = this
+        const target = e.currentTarget
+        // 点赞按钮是否含有 active 类，我们用它来判断是否已赞
+        const active = target.classList.contains('active')
+        const articleId = this.articleId
+        if (active) {
+          // 清除已赞样式
+          this.likeClass = ''
+          for (let likeUser of this.likeUsers) {
+            if (parseInt(likeUser.user_id) === this.$store.state.user.id) {
+              // 删除点赞用户
+              this.likeUsers.splice(this.likeUsers.indexOf(likeUser), 1)
+              break
+            }
+        }
+        } else {
+          // 添加已赞样式
+          this.likeClass = 'active animated rubberBand'
+          const user = this.$store.state.user
+          this.likeUsers.push({ user_id: user.id, avatar: user.avatar })
+        }
+      }
+    },
   }
 }
 </script>
