@@ -72,7 +72,7 @@ export default {
           that.id = id
           that.userAvatar = avatar
           that.article_count = article_count
-          that.userName = name    
+          that.userName = name
       })
     }
   }
