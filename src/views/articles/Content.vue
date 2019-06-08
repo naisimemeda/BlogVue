@@ -1,41 +1,41 @@
 <template>
-      <div class="col-md-9 left-col pull-right">
-        <div class="panel article-body content-body">
-          <h1 class="text-center">{{ title }}</h1>
-          <div class="article-meta text-center">
-            <i class="fa fa-clock-o"></i>
-            <abbr>{{create_time}}</abbr>
+<div class="col-md-9 left-col pull-right">
+  <div class="panel article-body content-body">
+    <h1 class="text-center">{{ title }}</h1>
+    <div class="article-meta text-center">
+      <i class="fa fa-clock-o"></i>
+      <abbr>{{create_time}}</abbr>
+    </div>
+    <div class="entry-content">
+      <div class="content-body entry-content panel-body ">
+        <div class="markdown-body" v-html="content"></div>
+        <div v-if="auth && this.$store.state.user.id === user_id" class="panel-footer operate">
+          <div class="actions">
+            <a @click="deleteArticle" class="admin" href="javascript:;"><i class="fa fa-trash-o"></i></a>
+            <a @click="editArticle" class="admin" href="javascript:;"><i class="fa fa-pencil-square-o"></i></a>
           </div>
-          <div class="entry-content">
-            <div class="content-body entry-content panel-body ">
-              <div class="markdown-body" v-html="content"></div>
-              <div v-if="auth && this.$store.state.user.id === 1" class="panel-footer operate">
-              <div class="actions">
-                <a @click="deleteArticle" class="admin" href="javascript:;"><i class="fa fa-trash-o"></i></a>
-                <a @click="editArticle" class="admin" href="javascript:;"><i class="fa fa-pencil-square-o"></i></a>
-              </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="votes-container panel panel-default padding-md">
-      <div class="panel-body vote-box text-center">
-        <div class="btn-group">
-          <div @click="like" href="javascript:;" class="vote btn btn-primary popover-with-html" :class="likeClass">
-            <i class="fa fa-thumbs-up"></i> {{ likeClass ? '已赞' : '点赞' }}
-          </div>
-        </div>
-        <div class="voted-users">
-          <div class="user-lists">
-            <span v-for="(likeUser, index) in likeUsers" :key='index'>
-              <img :src="likeUser.avatar" class="img-thumbnail avatar avatar-middle animated swing" :class="{ 's' : likeUser.user_id == 1 }">
-            </span>
-          </div>
-          <div v-if="!likeUsers.length" class="vote-hint">成为第一个点赞的人吧 ?</div>
         </div>
       </div>
     </div>
+  </div>
+  <div class="votes-container panel panel-default padding-md">
+    <div class="panel-body vote-box text-center">
+      <div class="btn-group">
+        <div @click="like" href="javascript:;" class="vote btn btn-primary popover-with-html" :class="likeClass">
+          <i class="fa fa-thumbs-up"></i> {{ likeClass ? '已赞' : '点赞' }}
+        </div>
       </div>
+      <div class="voted-users">
+        <div class="user-lists">
+          <span v-for="(likeUser, index) in likeUsers" :key='index'>
+            <img :src="likeUser.avatar" class="img-thumbnail avatar avatar-middle animated swing" :class="{ 's' : likeUser.user_id == 1 }">
+          </span>
+        </div>
+        <div v-if="!likeUsers.length" class="vote-hint">成为第一个点赞的人吧 ?</div>
+      </div>
+    </div>
+  </div>
+</div>
 </template>
 
 
@@ -46,17 +46,16 @@ import hljs from 'highlight.js'
 import ls from '@/utils/localStorage'
 import register from '@/api/article'
 import emoji from 'node-emoji'
-import { mapState } from 'vuex'
-
-
-
+import {
+  mapState
+} from 'vuex'
 
 export default {
   name: 'Content',
   // 添加相关数据
   data() {
     return {
-      articleId:'',
+      articleId: '',
       title: '', // 文章标题
       content: '', // 文章内容
       create_time: '',
@@ -70,16 +69,12 @@ export default {
       'auth',
     ])
   },
-  // 在实例创建完成后
-  created() {
-    // 从当前路由对象获取参数 articleId
+  beforeCreate(){
     const articleId = this.$route.params.articleId
     if (articleId) {
       register.Article(articleId).then(response => {
         const article = response.data
-         
-        let { id, title, content, created_at, user_id , like} = article
-
+        let {id, title, content, created_at, user_id, like} = article
         this.title = title
         // 使用编辑器的 markdown 方法将 Markdown 内容转成 HTML
         this.content = SimpleMDE.prototype.markdown(emoji.emojify(content, name => name))
@@ -98,11 +93,16 @@ export default {
       })
     }
   },
-   methods: {
+  methods: {
     // 编辑文章
     editArticle() {
       // 点击编辑文章图标，跳到编辑文章页面，并附带当前文章 ID
-      this.$router.push({ name: 'Edit', params: { articleId: this.articleId } })
+      this.$router.push({
+        name: 'Edit',
+        params: {
+          articleId: this.articleId
+        }
+      })
     },
     // 删除文章
     deleteArticle() {
@@ -110,13 +110,18 @@ export default {
         text: '你确定要删除此内容吗?',
         confirmButtonText: '删除'
       }).then((res) => {
-          register.DelArticle(this.articleId).then(response => {
-          router.push({ name: 'Home', params: { showMsg: true } })
+        register.DelArticle(this.articleId).then(response => {
+          router.push({
+            name: 'Home',
+            params: {
+              showMsg: true
+            }
+          })
         })
       })
     },
     like(e) {
-  // 未登录时，提示登录
+      // 未登录时，提示登录
       if (!this.auth) {
         this.$swal({
           text: '需要登录以后才能执行此操作。',
@@ -133,20 +138,29 @@ export default {
         const active = target.classList.contains('active')
         const articleId = this.articleId
         if (active) {
-          // 清除已赞样式
-          this.likeClass = ''
-          for (let likeUser of this.likeUsers) {
-            if (parseInt(likeUser.user_id) === this.$store.state.user.id) {
-              // 删除点赞用户
-              this.likeUsers.splice(this.likeUsers.indexOf(likeUser), 1)
-              break
+          register.CancelLike(this.articleId).then(response => {
+            this.likeClass = ''
+            for (let likeUser of this.likeUsers) {
+              if (parseInt(likeUser.user_id) === this.$store.state.user.id) {
+                this.likeUsers.splice(this.likeUsers.indexOf(likeUser), 1)
+                break
+              }
             }
-        }
+          }).catch(error => {
+            return this.$message.show('请重试', 'warning')
+          })
         } else {
           // 添加已赞样式
-          this.likeClass = 'active animated rubberBand'
-          const user = this.$store.state.user
-          this.likeUsers.push({ user_id: user.id, avatar: user.avatar })
+          register.ArticleLike(this.articleId).then(response => {
+            this.likeClass = 'active animated rubberBand'
+            const user = this.$store.state.user
+            this.likeUsers.push({
+              user_id: user.id,
+              avatar: user.avatar
+            })
+          }).catch(error => {
+            return this.$message.show('请重试', 'warning')
+          })
         }
       }
     },
@@ -155,7 +169,8 @@ export default {
 </script>
 
 <style scoped>
-.CodeMirror, .CodeMirror-scroll {
+.CodeMirror,
+.CodeMirror-scroll {
   color: #fff;
 }
 </style>

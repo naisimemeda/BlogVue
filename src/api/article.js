@@ -31,5 +31,23 @@ export default {
     }).then(response =>
         response.data
     ).catch(error => error.response.data)
-  }
+  },
+  CancelLike: (articleId) => {
+    return axios.get(('http://blogapi.test/api/article/cancelike/'+ articleId),  {
+      headers: {
+        'Authorization': user.token
+      }
+    }).then(response =>
+        response.data
+    ).catch(error => error.response.data)
+  },
+  ArticleLike: (articleId) => {
+    return axios.get(('http://blogapi.test/api/article/like/'+ articleId),  {
+      headers: {
+        'Authorization': user.token
+      }
+    }).then(response =>
+        response.data
+    ).catch(error => error.response.data)
+  },
 }
