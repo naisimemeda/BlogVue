@@ -43,8 +43,8 @@
       </div>
     </div>
     <div class="panel-body">
-      <ul id="reply-list" class="list-group row">
-        <li v-for="(comment, index) in comments" :key="comment.commentId" class="list-group-item media">
+      <transition-group id="reply-list" name="fade" tag="ul" class="list-group row">
+        <li v-for="(comment, index) in comments" :key="index+1" class="list-group-item media">
           <div class="avatar avatar-container pull-left">
             <router-link :to="`/${comment.uname}`">
               <img :src="comment.uavatar" class="media-object img-thumbnail avatar avatar-middle">
@@ -52,14 +52,19 @@
           </div>
           <div class="infos">
             <div class="media-heading">
-              <router-link :to="`/${comment.uname}`" class="remove-padding-left author rm-link-color">
+              <router-link :to="`/${comment.user_id}`" class="remove-padding-left author rm-link-color">
                 {{ comment.uname }}
               </router-link>
+              <span v-if="auth" class="operate pull-right">
+                <span v-if="comment.user.id == CurrentUserId">
+                   <a href="javascript:;" @click="deleteComment(comment.id)"><i class="fa fa-trash-o"></i></a>
+                </span>
+              </span>
               <div class="meta">
                 <a :id="`reply${index + 1}`" :href="`#reply${index + 1}`" class="anchor">#{{ index + 1 }}</a>
                 <span> ⋅ </span>
                 <abbr class="timeago">
-                  {{ comment.date | moment('from', { startOf: 'second' }) }}
+                  {{ comment.created_at}}
                 </abbr>
               </div>
             </div>
@@ -67,7 +72,7 @@
             <div class="preview media-body markdown-reply markdown-body" v-html="comment.content"></div>
           </div>
         </li>
-      </ul>
+      </transition-group>
       <div v-show="!comments.length" class="empty-block">
         暂无评论~~
       </div>
@@ -113,6 +118,7 @@ export default {
       likeClass: '', // 点赞样式
       commentHtml: '', // 评论 HTML
       comments: [],
+      CurrentUserId: ''
     }
   },
   computed: {
@@ -125,14 +131,7 @@ export default {
     if (articleId) {
       register.Article(articleId).then(response => {
         const article = response.data
-        let {
-          id,
-          title,
-          content,
-          created_at,
-          user_id,
-          like
-        } = article
+        let {id, title, content, created_at, user_id, like } = article
         this.title = title
         // 使用编辑器的 markdown 方法将 Markdown 内容转成 HTML
         this.content = SimpleMDE.prototype.markdown(emoji.emojify(content, name => name))
@@ -150,9 +149,14 @@ export default {
           })
         })
       })
+      register.ArticleComment(articleId).then(response => {
+        let comments = response.data
+        this.renderComments(comments)
+      })
     }
   },
   mounted() {
+    this.CurrentUserId = this.$store.state.user.id
     // 已登录时，才开始创建
     if (this.auth) {
       // 自动高亮编辑器的内容
@@ -205,6 +209,7 @@ export default {
     },
     // 删除文章
     deleteArticle() {
+       if (res.value) {
       this.$swal({
         text: '你确定要删除此内容吗?',
         confirmButtonText: '删除'
@@ -218,6 +223,7 @@ export default {
           })
         })
       })
+     }
     },
     like(e) {
       // 未登录时，提示登录
@@ -266,14 +272,22 @@ export default {
     comment() {
       // 编辑器的内容不为空时
       if (this.commentMarkdown && this.commentMarkdown.trim() !== '') {
-        this.simplemde.value('')
-        // 使回复按钮获得焦点
-        document.querySelector('#reply-btn').focus()
-        this.$nextTick(() => {
-          const lastComment = document.querySelector('#reply-list li:last-child')
-          if (lastComment) lastComment.scrollIntoView(true)
-        })
-      }
+        const data = {
+          content:this.commentMarkdown
+        }
+        register.CreateComment(this.articleId, data).then(response => {
+          const id = response.data.id
+          document.querySelector('#reply-btn').focus()
+          this.PushComments({content:this.commentMarkdown}, id)
+          this.$nextTick(() => {
+            const lastComment = document.querySelector('#reply-list li:last-child')
+            if (lastComment) lastComment.scrollIntoView(true)
+            this.simplemde.value('')
+          })
+        }).catch(error => {
+        return this.$message.show('请重试', 'warning')
+      })
+     }
     },
 
     renderComments(comments) {
@@ -282,28 +296,49 @@ export default {
         const newComments = comments.map(comment => ({
           ...comment
         }))
-        const user = this.user || {}
-
         for (let comment of newComments) {
-          comment.uname = user.name
-          comment.uavatar = user.avatar
+          comment.id = comment.id
+          comment.user_id = comment.user.id
+          comment.uname = comment.user.name
+          comment.uavatar = comment.user.avatar
           // 将评论内容从 Markdown 转成 HTML
           comment.content = SimpleMDE.prototype.markdown(emoji.emojify(comment.content, name => name))
         }
-
-        // 更新实例的 comments
         this.comments = newComments
-        // 将 Markdown 格式的评论添加到当前实例
-        this.commentsMarkdown = comments
       }
     },
-  }
+    PushComments(comment, id){
+        const content ={
+          id:id,
+          user_id: this.$store.state.user.id,
+          uname: this.$store.state.user.name,
+          uavatar: this.$store.state.user.avatar,
+          user:{
+            id:this.$store.state.user.id,
+          },
+          content:SimpleMDE.prototype.markdown(emoji.emojify(comment.content, name => name))
+        }
+        this.comments.push(content)
+    },
+    deleteComment(commentId) {
+      this.$swal({
+        text: '你确定要删除此评论吗?',
+        confirmButtonText: '删除'
+      }).then((res) => {
+        if (res.value) {
+          register.DeleteComment(commentId).then(response => {
+
+          }).catch(error => {
+          return this.$message.show('请重试', 'warning')
+        })
+        }
+      })
+    }
+  },
 }
 </script>
 
 <style scoped>
-.CodeMirror,
-.CodeMirror-scroll {
-  color: #fff;
-}
+.fade-enter-active, .fade-leave-active { transition: opacity .5s;}
+.fade-enter, .fade-leave-to { opacity: 0;}
 </style>

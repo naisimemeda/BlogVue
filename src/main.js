@@ -51,7 +51,7 @@ new Vue({
           }
           break
         case 414:
-          return this.$store.dispatch('errlogout')
+          return router.push({name: 'Home', params: {errLogin: true}})
           break
       }
       return Promise.reject(error)

@@ -50,4 +50,27 @@ export default {
         response.data
     ).catch(error => error.response.data)
   },
+  ArticleComment: (articleId) => {
+    return axios.get(('http://blogapi.test/api/comment/'+ articleId)).then(response =>
+        response.data
+    ).catch(error => error.response.data)
+  },
+  CreateComment: (articleId, data) => {
+    return axios.post(('http://blogapi.test/api/comment/'+ articleId), data, {
+      headers: {
+        'Authorization': user.token,
+      }
+    }).then(response =>
+      response.data
+    ).catch(error => error.response.data)
+  },
+  DeleteComment: CommentId => {
+    return axios.delete(('http://blogapi.test/api/comment/'+ CommentId),  {
+      headers: {
+        'Authorization': user.token
+      }
+    }).then(response =>
+        response.data
+    ).catch(error => error.response.data)
+  }
 }
