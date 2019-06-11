@@ -2,6 +2,11 @@ import axios from 'axios'
 import store from '@/store'
 var user = store.state.user
 export default {
+  ArticleList: (Page, Order) => {
+    return axios.get(('http://blogapi.test/api/article/list?page=' + Page +'&order='+ Order)).then(response =>
+        response.data
+    ).catch(error => error.response.data)
+  },
   CreateArticle: data => {
     return axios.post(('http://blogapi.test/api/article'), data, {
       headers: {

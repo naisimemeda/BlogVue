@@ -17,9 +17,6 @@
 
     <div id="top-navbar-collapse" :class="['collapse', 'navbar-collapse', { in: showCollapsedNav }]">
       <ul class="nav navbar-nav">
-        <li v-for="(item, index) in navList" :class="{ active: index === activeNavIndex }">
-          <a href="#" @click="changeNavIndex(index)">{{ item.name }}</a>
-        </li>
       </ul>
       <div class="navbar-right">
         <TheEntry />
@@ -31,7 +28,7 @@
 
 
 <script>
-import topic from '@/api/topics'
+
 import TheEntry from '@/components/layouts/TheEntry'
 export default {
   name: 'TheHeader',
@@ -53,10 +50,6 @@ export default {
     this.uploadsUrl = 'https://vuejscaffcdn.phphub.org/uploads/'
   },
   mounted() {
-    let that = this
-    topic.get('http://blogapi.test/api/topics').then(response => {
-        that.navList = response.data
-    })
   },
   methods: {
     changeNavIndex(index) {

@@ -57,7 +57,7 @@
               </router-link>
               <span v-if="auth" class="operate pull-right">
                 <span v-if="comment.user.id == CurrentUserId">
-                   <a href="javascript:;" @click="deleteComment(comment.id)"><i class="fa fa-trash-o"></i></a>
+                   <a href="javascript:;" @click="deleteComment(comment.id, index)"><i class="fa fa-trash-o"></i></a>
                 </span>
               </span>
               <div class="meta">
@@ -320,14 +320,15 @@ export default {
         }
         this.comments.push(content)
     },
-    deleteComment(commentId) {
+    deleteComment(commentId, index) {
+      let that = this
       this.$swal({
         text: '你确定要删除此评论吗?',
         confirmButtonText: '删除'
       }).then((res) => {
         if (res.value) {
           register.DeleteComment(commentId).then(response => {
-
+              that.comments.splice(index, 1);
           }).catch(error => {
           return this.$message.show('请重试', 'warning')
         })
