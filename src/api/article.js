@@ -19,6 +19,9 @@ export default {
   Article: id => {
     return axios.get(('http://blogapi.test/api/article/'+ id)).then( response => response.data )
   },
+  Search: (Search, Order = 1) => {
+    return axios.get(('http://blogapi.test/api/article/search?search='+ Search+'&order='+ Order)).then( response => response.data )
+  },
   UpdateArticle: (articleId, data) => {
     return axios.post(('http://blogapi.test/api/article/'+ articleId), data, {
       headers: {

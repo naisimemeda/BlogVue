@@ -67,4 +67,9 @@ export default [
       }
     ]
   },
+  {
+    path: '/article/search',
+    name: 'Search',
+    component: () => import('@/views/Search')
+  },
 ]

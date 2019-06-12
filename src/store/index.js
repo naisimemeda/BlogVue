@@ -2,12 +2,15 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import ls from '../utils/localStorage'
 import router from '../router'
+import * as moreGetters from './getters'
 Vue.use(Vuex)
 
 const state = {
   user: ls.getItem('user'),
   auth: ls.getItem('auth'),
-  articles: ls.getItem('articles')
+  articles: ls.getItem('articles'),
+  searchValue: '',
+  origin: location.origin.indexOf('github.io') !== -1 ? `${location.origin}/vuejs-essential/dist` : location.origin 
 }
 const mutations = {
   USER(state, user) {
@@ -22,6 +25,9 @@ const mutations = {
     state.articles = articles
     ls.setItem('articles', articles)
   },
+  UPDATE_SEARCH_VALUE(state, searchValue) {
+    state.searchValue = searchValue
+  }
 }
 
 const actions = {
@@ -40,6 +46,7 @@ const actions = {
       }
     })
   },
+  
   errlogout({ commit }) {
     commit('UPDATE_AUTH', false)
     ls.removeItem('user')
@@ -69,11 +76,12 @@ const actions = {
     commit('USER', user)
   },
 }
-
+const getters = { ...moreGetters }
 const store = new Vuex.Store({
   state,
   mutations,
-  actions
+  actions,
+  getters
 })
 
 export default store
