@@ -38,16 +38,22 @@
     <div class="panel-footer text-right remove-padding-horizontal pager-footer">
     <Pagination :currentPage="currentPage" :total="total"  :onPageChange="changePage" />
 </div>
+
   </div>
 </div>
+<TheSidebar/>
 </div>
 </template>
 
 <script>
 import register from '@/api/article'
 import topic from '@/api/topics'
+import TheSidebar from '@/components/layouts/TheSidebar'
 export default {
   name: 'Home',
+  components: {
+    TheSidebar
+  },
   data() {
     return {
       articles: '',
