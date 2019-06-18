@@ -209,11 +209,11 @@ export default {
     },
     // 删除文章
     deleteArticle() {
-       if (res.value) {
       this.$swal({
         text: '你确定要删除此内容吗?',
         confirmButtonText: '删除'
       }).then((res) => {
+        if (res.value) {
         register.DelArticle(this.articleId).then(response => {
           router.push({
             name: 'Home',
@@ -222,8 +222,8 @@ export default {
             }
           })
         })
+      }
       })
-     }
     },
     like(e) {
       // 未登录时，提示登录
