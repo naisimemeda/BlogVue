@@ -15,7 +15,7 @@
     "bootstrap-sass": "^3.4.1",
     "cropperjs": "^1.5.1",
     "font-awesome": "^4.7.0",
-    "highlight.js": "^9.15.8",
+    "highlight.js": "^10.1.2",
     "mavon-editor": "^2.7.4",
     "node-emoji": "^1.10.0",
     "sass-loader": "^7.1.0",
