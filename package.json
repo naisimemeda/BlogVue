@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "animate.css": "^3.7.2",
-    "axios": "^0.18.1",
+    "axios": "^0.21.1",
     "bootstrap-sass": "^3.4.1",
     "cropperjs": "^1.5.1",
     "font-awesome": "^4.7.0",
